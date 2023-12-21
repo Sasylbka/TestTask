@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  input {
+    position: absolute;
+    padding-left: 1em;
+    padding-right: 1em;
+    border: 1px solid rgba(27, 31, 35, .15);
+  }
+}
+  </style>
+  <title>Добавить тип транспорта</title>
+</head>
+<body>
+
+<form id="myForm" method="post">
+  <label for="shname">Сокращенное название:</label>
+  <input type="text" id="shname" name="shname" required>
+  <br>
+
+  <label for="fullname">Полное название:</label>
+  <input type="fullname" id="fullname" name="fullname" required>
+  <br>
+
+  <input type="submit" value="Добавить">
+</form>
+<script>
+    class TransportKind {
+        constructor(shname, fullname) {
+            this.shname = shname;
+            this.fullname = fullname;
+        }
+    }
+    document.getElementById("myForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const kindData = new TransportKind(
+            document.getElementById("shname").value,
+            document.getElementById("fullname").value
+        );
+
+        const jsonData = JSON.stringify(kindData);
+
+        fetch("http://localhost:8080/testCase/addKind", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: jsonData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("POST request successful:", data);
+            window.location.href = "/testCase/treeView";
+        })
+        .catch(error => {
+            console.error("Error during POST request:", error);
+        });
+    });
+</script>
+</body>
+</html>

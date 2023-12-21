@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Tree Structure</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link th:href="@{/button-delete.css}" rel="stylesheet" />
+    <link th:href="@{/button-update.css}" rel="stylesheet" />
+    <link th:href="@{/button-add.css}" rel="stylesheet" />
+    <link th:href="@{/tree.css}" rel="stylesheet" />
+
+</head>
+<body>
+<div>
+<button class="button-add" id="addFirm">Добавить фирму</button>
+<button class="button-add" id="addKind">Добавить вид транспорта</button>
+<button class="button-add" id="addType">Добавить тип транспорта</button>
+<button class="button-add" id="addData">Добавить транспорт</button>
+    <br>
+<button class="button-delete" id="deleteFirm">Удалить фирму</button>
+<button class="button-delete" id="deleteKind">Удалить вид транспорта</button>
+<button class="button-delete" id="deleteType">Удалить тип транспорта</button>
+<button class="button-delete" id="deleteData">Удалить транспорт</button>
+    <label for="deleteId">ID удаляемого объекта:</label>
+    <input type="text" id="deleteId" name="deleteId" required>
+    <br>
+<button class="button-update" id="updateFirm">Редактировать фирму</button>
+<button class="button-update" id="updateKind">Редактировать вид транспорта</button>
+<button class="button-update" id="updateType">Редактировать тип транспорта</button>
+<button class="button-update" id="updateData">Редактировать транспорт</button>
+    <br>
+</div>
+<h1 class="title">Transport Tree</h1>
+    <ul id="tree" class="tree">
+        <li th:each="firmNode : ${tree.getFirmNodes()}" data-firm-id="${firmNode.getFirm().getId()}">
+
+            <span th:text="|Фирма:${firmNode.getFirm().getTlgr()}, ID:${firmNode.getFirm().getId()}|"></span>
+            <ul>
+                <!-- Iterate over kindNodes -->
+                <li th:each="kindNode : ${firmNode.getKindNodes()}" data-kind-id="${kindNode.getKind().getId()}">
+                    <span th:text="|Вид транспорта:${kindNode.getKind().getFullname()}, ID: ${kindNode.getKind().getId()}|">
+                    </span>
+                    <ul>
+                        <!-- Iterate over typeNodes -->
+                        <li th:each="typeNode : ${kindNode.getTypeNodes()}" data-type-id="${typeNode.getType().getId()}">
+                            <span th:text="|Тип транспорта:${typeNode.getType().getTname()}, ID:${typeNode.getType().getId()}|"></span>
+                            <ul>
+                                <!-- Iterate over dataNodes -->
+                                <li th:each="dataNode : ${typeNode.getDataNodes()}" data-data-id="${dataNode.getData().getId()}">
+                                    <span th:text="|Номер транспорта:${dataNode.getData().getUnts()}, UIN:${dataNode.getData().getUin()}|"></span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+<!-- Add your API endpoints -->
+<script>
+     function redirectToAddingForm() {
+        window.location.href = "/testCase/add-firm-form";
+    }
+    function redirectToAddingKind() {
+        window.location.href = "/testCase/add-transport-kind-form";
+    }
+    function redirectToAddingType() {
+        window.location.href = "/testCase/add-transport-type-form";
+    }
+    function redirectToAddingData() {
+        window.location.href = "/testCase/add-transport-data-form";
+    }
+     function redirectToUpdatingForm() {
+        window.location.href = "/testCase/update-firm-form";
+    }
+    function redirectToUpdatingKind() {
+        window.location.href = "/testCase/update-transport-kind-form";
+    }
+    function redirectToUpdatingType() {
+        window.location.href = "/testCase/update-transport-type-form";
+    }
+    function redirectToUpdatingData() {
+        window.location.href = "/testCase/update-transport-data-form";
+    }
+    document.getElementById("addData").addEventListener("click", redirectToAddingData);
+    document.getElementById("addFirm").addEventListener("click", redirectToAddingForm);
+    document.getElementById("addKind").addEventListener("click", redirectToAddingKind);
+    document.getElementById("addType").addEventListener("click", redirectToAddingType);
+
+    document.getElementById("deleteFirm").addEventListener("click", deleteFirm);
+    document.getElementById("deleteType").addEventListener("click", deleteType);
+    document.getElementById("deleteKind").addEventListener("click", deleteKind);
+    document.getElementById("deleteData").addEventListener("click", deleteData);
+
+    document.getElementById("updateFirm").addEventListener("click", redirectToUpdatingForm);
+    document.getElementById("updateType").addEventListener("click", redirectToUpdatingType);
+    document.getElementById("updateKind").addEventListener("click", redirectToUpdatingKind);
+    document.getElementById("updateData").addEventListener("click", redirectToUpdatingData);
+
+
+    function deleteFirm() {
+    const id = document.getElementById("deleteId").value
+    const params = new URLSearchParams({'firmId':id});
+    const apiUrl = 'http://localhost:8080/testCase/deleteFirm?'+params
+    console.log(apiUrl);
+    fetch(apiUrl, {
+            method: "DELETE",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(data => {
+            console.log("DELETE request successful:", data);
+            window.location.href = "/testCase/treeView";
+        })
+        .catch(error => {
+            console.error("Error during POST request:", error);
+        });
+    }
+
+    function deleteKind() {
+    const id = document.getElementById("deleteId").value
+    const params = new URLSearchParams({'kindId':id});
+    const apiUrl = 'http://localhost:8080/testCase/deleteKind?'+params
+    console.log(apiUrl);
+    fetch(apiUrl, {
+            method: "DELETE",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(data => {
+            console.log("DELETE request successful:", data);
+            window.location.href = "/testCase/treeView";
+        })
+        .catch(error => {
+            console.error("Error during POST request:", error);
+        });
+    }
+
+    function deleteType() {
+    const id = document.getElementById("deleteId").value
+    const params = new URLSearchParams({'typeId':id});
+    const apiUrl = 'http://localhost:8080/testCase/deleteType?'+params
+    console.log(apiUrl);
+    fetch(apiUrl, {
+            method: "DELETE",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(data => {
+            console.log("DELETE request successful:", data);
+            window.location.href = "/testCase/treeView";
+        })
+        .catch(error => {
+            console.error("Error during POST request:", error);
+        });
+    }
+
+    function deleteData() {
+    const id = document.getElementById("deleteId").value
+    const params = new URLSearchParams({'dataId':id});
+    const apiUrl = 'http://localhost:8080/testCase/deleteData?'+params
+    console.log(apiUrl);
+    fetch(apiUrl, {
+            method: "DELETE",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(data => {
+            console.log("DELETE request successful:", data);
+            window.location.href = "/testCase/treeView";
+        })
+        .catch(error => {
+            console.error("Error during POST request:", error);
+        });
+    }
+
+
+</script>
+
+</body>
+
+</html>

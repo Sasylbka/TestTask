@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  input {
+    position: absolute;
+    padding-left: 1em;
+    padding-right: 1em;
+    border: 1px solid rgba(27, 31, 35, .15);
+  }
+}
+  </style>
+  <title>Добавить вид транспорта</title>
+</head>
+<body>
+
+<form id="myForm" method="post">
+  <label for="tname">Наименование типа:</label>
+  <input type="text" id="tname" name="tname" required>
+  <br>
+
+  <label for="vidtName">Название вида:</label>
+  <input type="text" id="vidtName" name="vidtName" required>
+  <br>
+
+  <label for="prizngr">Признак грузового ТС:</label>
+  <input type="text" id="prizngr" name="prizngr" required>
+  <br>
+
+  <input type="submit" value="Добавить">
+</form>
+<script>
+    class TransportType {
+        constructor(tname, vidtName,prizngr) {
+            this.tname = tname;
+            this.vidtName = vidtName;
+            this.prizngr = prizngr;
+        }
+    }
+    document.getElementById("myForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const typeData = new TransportType(
+            document.getElementById("tname").value,
+            document.getElementById("vidtName").value,
+            document.getElementById("prizngr").value
+        );
+
+        const jsonData = JSON.stringify(typeData);
+
+        fetch("http://localhost:8080/testCase/addType", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: jsonData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("POST request successful:", data);
+            window.location.href = "/testCase/treeView";
+        })
+        .catch(error => {
+            console.error("Error during POST request:", error);
+        });
+    });
+</script>
+</body>
+</html>
